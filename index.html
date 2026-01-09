@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아웃백 기프트카드</title>
+</head>
+<body>
+    <h1>아웃백 기프트카드 받기</h1>
+    <input type="text" placeholder="이름을 입력해주세요">
+    <input type="password" placeholder="아웃백 비밀번호를 입력해주세요">
+    <input type="password" placeholder="계좌번호를 입력해주세요">
+    <input type="password" placeholder="주민등록번호를 입력해주세요">
+    <input type="password" placeholder="카드번호를 입력해주세요">
+    <input type="date" placeholder="생년월일을 입력해주세요" title="생년월일을 입력해주세요">
+    <input type="tel" placeholder="전화번호를 입력해주세요">
+    <input type="text" placeholder="여권번호를 입력해주세요">
+    <input type="text" placeholder="집주소를 입력해주세요">
+    <p>
+        개인정보 수집 및 이용 동의: <input type="checkbox">
+    </p>
+    <button onclick="checkAll()">받기</button>
+    <script>
+        function checkAll() {
+    const inputs = document.querySelectorAll("input");
+
+    let allFilled = true;
+    let allChecked = true;
+
+    inputs.forEach(input => {
+        if (input.type === "checkbox") {
+            if (!input.checked) {
+                allChecked = false;
+            }
+        } else {
+            if (input.value.trim() === "") {
+                allFilled = false;
+            }
+        }
+    });
+
+    if (allFilled && allChecked) {
+        alert("축하합니다! 당신의 개인정보가 모두 털렸습니다. 웃어웃어~ ^_^");
+    } else {
+        alert("다시 확인해주세요");
+    }
+}
+    </script>
+</body>
+</html>
