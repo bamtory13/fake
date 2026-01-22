@@ -30,8 +30,7 @@
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-        // 아스키 캐릭터 세트 (밝기 순서: 어두움 -> 밝음)
-        const chars = '@%#*+=-:. ';
+        const chars = '@$#Y!=+~- ';
 
         upload.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -41,9 +40,7 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    // 가로 길이를 150자로 고정 (성능 및 표시 적정선)
                     const width = 320;
-                    // 아스키 폰트는 세로가 길기 때문에 세로 비율을 0.55 정도로 보정
                     const scale = width / img.width;
                     const height = Math.floor(img.height * scale * 0.55);
 
@@ -63,7 +60,7 @@
                             const b = pixels[offset + 2];
                             
                             // 평균 밝기 계산
-                            const brightness = (r + g + b) / 3;
+                            const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
                             const charIndex = Math.floor((brightness / 255) * (chars.length - 1));
                             ascii += chars[charIndex];
                         }
