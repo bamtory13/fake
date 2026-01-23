@@ -14,12 +14,13 @@
             display: inline-block;
             text-align: left;
             margin-top: 20px;
-            letter-spacing: 0;
         }
     </style>
 </head>
 <body>
     <h1>아스키 아트</h1>
+    <button id="colorBtn">컬러로 다시 만들기</button>
+    <button onclick="makeAscii(false);">흑백으로 다시 만들기</button>
     <input type="file" id="upload" accept="image/*">
     <br>
     <pre id="asciiArt"></pre>
@@ -27,10 +28,44 @@
     <script>
         const upload = document.getElementById('upload');
         const asciiArt = document.getElementById('asciiArt');
+        const colorBtn = document.getElementById('colorBtn');
+
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
         const chars = '@$#Y!=+~- ';
+        const char = '@';
+
+        let lastImageData = null;
+        let lastWidth = 0;
+        let lastHeight = 0;
+
+        function makeAscii(colorMode = false) {
+            if (!lastImageData) return;
+
+            const pixels = lastImageData.data;
+            let ascii = '';
+
+            for (let y = 0; y < lastHeight; y++) {
+                for (let x = 0; x < lastWidth; x++) {
+                    const offset = (y * lastWidth + x) * 4;
+                    const r = pixels[offset];
+                    const g = pixels[offset + 1];
+                    const b = pixels[offset + 2];
+
+                    if (colorMode) {
+                        ascii += `<span style="color: rgb(${r},${g},${b})">${char}</span>`;
+                    } else {
+                        const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+                        const charIndex = Math.floor((brightness / 255) * (chars.length - 1));
+                        ascii += chars[charIndex];
+                    }
+                }
+                ascii += '\n';
+            }
+
+            asciiArt.innerHTML = ascii;
+        }
 
         upload.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -48,29 +83,19 @@
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    const imageData = ctx.getImageData(0, 0, width, height);
-                    const pixels = imageData.data;
-                    let ascii = '';
+                    lastImageData = ctx.getImageData(0, 0, width, height);
+                    lastWidth = width;
+                    lastHeight = height;
 
-                    for (let y = 0; y < height; y++) {
-                        for (let x = 0; x < width; x++) {
-                            const offset = (y * width + x) * 4;
-                            const r = pixels[offset];
-                            const g = pixels[offset + 1];
-                            const b = pixels[offset + 2];
-                            
-                            // 평균 밝기 계산
-                            const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-                            const charIndex = Math.floor((brightness / 255) * (chars.length - 1));
-                            ascii += chars[charIndex];
-                        }
-                        ascii += '\n';
-                    }
-                    asciiArt.textContent = ascii;
+                    makeAscii(false);
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
+        });
+
+        colorBtn.addEventListener('click', () => {
+            makeAscii(true);
         });
     </script>
 </body>
